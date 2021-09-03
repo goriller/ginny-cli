@@ -1,9 +1,9 @@
 package handle
 
 import (
+	"github.com/fatih/structs"
 	"github.com/gorillazer/ginny-cli/ginny/options"
 	"github.com/gorillazer/ginny-cli/ginny/util"
-	"gopkg.in/yaml.v3"
 )
 
 // CreateProject 创建项目
@@ -14,7 +14,7 @@ func CreateProject(projectName, moduleName string, args ...string) error {
 		return err
 	}
 	projectDir := d + "/" + projectName
-	if err := PullTemplate(projectDir); err != nil {
+	if err := PullTemplate(projectDir, options.TemplateRepo); err != nil {
 		return err
 	}
 	// 删除多余文件
@@ -25,12 +25,12 @@ func CreateProject(projectName, moduleName string, args ...string) error {
 	if moduleName == "" {
 		moduleName = projectName
 	}
-	kb := &options.ReplaceKeywords{
+	r := &options.ReplaceKeywords{
 		APP_NAME:    projectName,
 		MODULE_NAME: moduleName,
 	}
 	// 替换关键字
-	if err := ReplaceFileKeyword(util.GetFiles(projectDir), kb); err != nil {
+	if err := ReplaceFileKeyword(util.GetFiles(projectDir), structs.Map(r)); err != nil {
 		return err
 	}
 
@@ -39,18 +39,14 @@ func CreateProject(projectName, moduleName string, args ...string) error {
 		ProjectName:   projectName,
 		ProjectModule: moduleName,
 	}
-	if err := writeProjectFlag(projectDir, p); err != nil {
+	if err := GenerateProjectInfo(projectDir, p); err != nil {
+		return err
+	}
+
+	//
+	if err := ExecCommand(projectDir, "go", "mod", "tidy"); err != nil {
 		return err
 	}
 
 	return nil
-}
-
-// writeProjectFlag
-func writeProjectFlag(projectDir string, p *options.ProjectInfo) error {
-	bt, err := yaml.Marshal(p)
-	if err != nil {
-		return err
-	}
-	return util.WriteToFile(projectDir+"/"+options.ProjectFlag, bt)
 }

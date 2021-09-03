@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"path"
 	"path/filepath"
 	"regexp"
 )
@@ -37,7 +38,7 @@ func IsFile(path string) bool {
 // MkDir 创建目录
 func MkDir(path string) error {
 	// 创建文件夹
-	err := os.Mkdir(path, os.ModePerm)
+	err := os.MkdirAll(path, os.ModePerm)
 	if err != nil {
 		return err
 	}
@@ -82,6 +83,13 @@ func CopyFile(src, dst string) error {
 		return err
 	}
 	defer source.Close()
+
+	dstPath := path.Dir(dst)
+	if !Exists(dstPath) {
+		if err := MkDir(dstPath); err != nil {
+			return err
+		}
+	}
 
 	destination, err := os.Create(dst)
 	if err != nil {

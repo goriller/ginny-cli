@@ -1,14 +1,16 @@
 package handle
 
 import (
+	"errors"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 
-	"github.com/fatih/structs"
 	"github.com/go-git/go-git/v5"
 	"github.com/gorillazer/ginny-cli/ginny/options"
 	"github.com/gorillazer/ginny-cli/ginny/util"
+	"gopkg.in/yaml.v3"
 )
 
 // GetCurrentDir 获取当前目录
@@ -23,35 +25,99 @@ func GetCurrentDir() (string, error) {
 }
 
 // PullTemplate 拉取模板
-func PullTemplate(dir string) error {
-	// Clone the given repository to the given directory
-	util.Info("git clone " + options.TemplateRepo)
+func PullTemplate(dir, repo string) error {
+	if !util.Exists(dir) {
+		_ = util.MkDir(dir)
+		// Clone the given repository to the given directory
+		util.Info("git clone " + repo)
+		_, err := git.PlainClone(dir, false, &git.CloneOptions{
+			URL:      repo,
+			Progress: os.Stdout,
+		})
+		if err != nil {
+			util.Error("Clone the given repository error:", err.Error())
+			return err
+		}
+	} else {
+		if !util.Exists(dir + "/.git") {
+			return errors.New("The directory is not empty and is not a valid git directory")
+		}
 
-	_, err := git.PlainClone(dir, false, &git.CloneOptions{
-		URL:      options.TemplateRepo,
-		Progress: os.Stdout,
-	})
-	if err != nil {
-		util.Error("Clone the given repository error:", err.Error())
-		return err
+		// We instantiate a new repository targeting the given path (the .git folder)
+		r, err := git.PlainOpen(dir)
+		if err != nil {
+			return err
+		}
+		// Get the working directory for the repository
+		w, err := r.Worktree()
+		if err != nil {
+			return err
+		}
+		util.Info("git pull origin master ")
+		err = w.Pull(&git.PullOptions{RemoteName: "origin", Force: true})
+		if err != nil {
+			util.Error(err.Error())
+			return nil
+		}
+		// Print the latest commit that was just pulled
+		ref, err := r.Head()
+		if err != nil {
+			util.Error(err.Error())
+			return nil
+		}
+		commit, err := r.CommitObject(ref.Hash())
+		if err != nil {
+			util.Error(err.Error())
+			return nil
+		}
+		util.Info("git pull success", commit)
 	}
+
 	return nil
 }
 
 // GenerateProjectInfo 构造项目标识
-func GenerateProjectInfo() {
-
+func GenerateProjectInfo(projectDir string, p *options.ProjectInfo) error {
+	bt, err := yaml.Marshal(p)
+	if err != nil {
+		return err
+	}
+	return util.WriteToFile(projectDir+"/"+options.ProjectFlag, bt)
 }
 
 // GetProjectInfo 检查当前目录是否ginny项目，并返回项目信息
-func GetProjectInfo() (conf *options.ProjectInfo, err error) {
-	return nil, nil
+func GetProjectInfo() (*options.ProjectInfo, error) {
+	dir, err := GetCurrentDir()
+	if err != nil {
+		return nil, errors.New("Failed to get project directory.")
+	}
+
+	flagFile := dir + "/" + options.ProjectFlag
+	if !util.Exists(flagFile) {
+		return nil, errors.New("Current project is not a Ginny project.\n" +
+			"Please execute command after enter Ginny project root directory.")
+	}
+
+	bin, err := ioutil.ReadFile(flagFile)
+	if err != nil {
+		return nil, errors.New("Failed to read project flag file.")
+	}
+	conf := &options.ProjectInfo{}
+	err = yaml.Unmarshal(bin, conf)
+	if err != nil {
+		return nil, errors.New("Failed Unmarshal projectinfo.")
+	}
+	if conf.ProjectName == "" {
+		return nil, errors.New("The project flags file is corrupted .")
+	}
+	conf.ProjectPath = dir
+
+	return conf, nil
 }
 
 // ReplaceFileKeyword
-func ReplaceFileKeyword(file []string, r *options.ReplaceKeywords) error {
-	m := structs.Map(r)
-	for _, f := range file {
+func ReplaceFileKeyword(files []string, m map[string]interface{}) error {
+	for _, f := range files {
 		if !util.IsFile(f) {
 			continue
 		}
