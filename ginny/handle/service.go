@@ -22,20 +22,13 @@ func CreateService(serviceName string) error {
 		return err
 	}
 
-	srcFile := fmt.Sprintf("%s/services/test.go", tmpPath)
+	srcFile := fmt.Sprintf("%s/services/tpl.go", tmpPath)
 	dstFile := fmt.Sprintf("%s/internal/services/%s.go", conf.ProjectPath, serviceName)
 	if util.Exists(dstFile) {
 		return errors.New("File already exists and overwriting is not allowed")
 	}
 	if err := util.CopyFile(srcFile, dstFile); err != nil {
 		return err
-	}
-	// replace service
-	caseName := strcase.ToCamel(serviceName)
-	r := &options.ReplaceKeywords{
-		APP_NAME:     conf.ProjectName,
-		MODULE_NAME:  conf.ProjectModule,
-		SERVICE_NAME: caseName,
 	}
 
 	// replace provider
@@ -45,9 +38,22 @@ func CreateService(serviceName string) error {
 			return err
 		}
 	}
+	// replace service
+	caseName := strcase.ToCamel(serviceName)
+	r := &options.ReplaceKeywords{
+		APP_NAME:     conf.ProjectName,
+		MODULE_NAME:  conf.ProjectModule,
+		SERVICE_NAME: caseName,
+	}
 	m := structs.Map(r)
 	m[options.ServiceReplaceAnchor[1]] = options.ServiceReplaceAnchorValue[1]([]string{caseName})
-	if err := ReplaceFileKeyword([]string{dstFile, providerFile}, m); err != nil {
+
+	// replace /cmd/provider.go
+	appProviderFile := conf.ProjectPath + "/cmd/provider.go"
+	m[options.AppReplaceAnchor[1]] = options.AppReplaceAnchorValue[1]([]string{"service", conf.ProjectModule, appProviderFile})
+	m[options.AppReplaceAnchor[2]] = options.AppReplaceAnchorValue[2]([]string{"service", appProviderFile})
+
+	if err := ReplaceFileKeyword([]string{dstFile, providerFile, appProviderFile}, m); err != nil {
 		return err
 	}
 

@@ -22,13 +22,13 @@ func CreateProto(serviceName string, validate bool) error {
 	if err := PullTemplate(tmpPath, options.ComponentTemplateRepo); err != nil {
 		return err
 	}
-	protoFile := fmt.Sprintf("%s/demo.proto", tmpPath)
+	protoFile := fmt.Sprintf("%s/proto/demo.proto", tmpPath)
 	dstFile := fmt.Sprintf("%s/api/proto/%s.proto", conf.ProjectPath, serviceName)
 	if util.Exists(dstFile) {
 		return errors.New("File already exists and overwriting is not allowed")
 	}
 	if validate {
-		protoFile = fmt.Sprintf("%s/demo_v.proto", tmpPath)
+		protoFile = fmt.Sprintf("%s/proto/demo_v.proto", tmpPath)
 	}
 	if err := util.CopyFile(protoFile, dstFile); err != nil {
 		return err
@@ -45,11 +45,17 @@ func CreateProto(serviceName string, validate bool) error {
 	}
 
 	if validate {
-		protoFile = fmt.Sprintf("%s/validate.proto", tmpPath)
+		protoFile = fmt.Sprintf("%s/proto/validate.proto", tmpPath)
 		dstFile = fmt.Sprintf("%s/api/proto/validate.proto", conf.ProjectPath)
 		if err := util.CopyFile(protoFile, dstFile); err != nil {
 			return err
 		}
 	}
+
+	if err := ExecCommand(conf.ProjectPath, "make", "proto"); err != nil {
+		util.Error(err)
+	}
+
+	util.Info("You can modify the proto file, and then execute `make proto` to generate pb code.")
 	return nil
 }

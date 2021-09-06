@@ -8,6 +8,8 @@ import (
 
 func init() {
 	newCmd.Flags().StringP("module", "m", "", "Define the project module, ex: git.tencent.com/demo")
+	newCmd.Flags().Bool("grpc", false, "Create a grpc service project")
+	newCmd.Flags().Bool("http", true, "Create a http service project")
 	rootCmd.AddCommand(newCmd)
 }
 
@@ -29,7 +31,22 @@ var newCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		if err := handle.CreateProject(projectName, module); err != nil {
+		enableGrpc, err := flags.GetBool("grpc")
+		if err != nil {
+			return err
+		}
+		enableHttp, err := flags.GetBool("http")
+		if err != nil {
+			return err
+		}
+		arg := []string{}
+		if enableHttp || (!enableGrpc && !enableHttp) {
+			arg = append(arg, "http")
+		}
+		if enableGrpc {
+			arg = append(arg, "grpc")
+		}
+		if err := handle.CreateProject(projectName, module, arg...); err != nil {
 			return err
 		}
 

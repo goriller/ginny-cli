@@ -34,7 +34,6 @@ var protoCmd = &cobra.Command{
 		}
 
 		util.Info("Create new proto file success!")
-		util.Info("You can modify the proto file, and then execute `make proto` to generate pb code.")
 		return nil
 	},
 }

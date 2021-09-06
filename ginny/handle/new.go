@@ -1,6 +1,8 @@
 package handle
 
 import (
+	"strings"
+
 	"github.com/fatih/structs"
 	"github.com/gorillazer/ginny-cli/ginny/options"
 	"github.com/gorillazer/ginny-cli/ginny/util"
@@ -25,6 +27,14 @@ func CreateProject(projectName, moduleName string, args ...string) error {
 	if moduleName == "" {
 		moduleName = projectName
 	}
+
+	argStr := strings.Join(args, ",")
+	if strings.Contains(argStr, "grpc") {
+		if err := CreateGrpc(projectName, "server"); err != nil {
+			return err
+		}
+	}
+
 	r := &options.ReplaceKeywords{
 		APP_NAME:    projectName,
 		MODULE_NAME: moduleName,

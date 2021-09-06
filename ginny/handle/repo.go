@@ -22,7 +22,7 @@ func CreateRepo(repoName string, database []string) error {
 		return err
 	}
 
-	srcFile := fmt.Sprintf("%s/repositories/test.go", tmpPath)
+	srcFile := fmt.Sprintf("%s/repositories/tpl.go", tmpPath)
 	dstFile := fmt.Sprintf("%s/internal/repositories/%s.go", conf.ProjectPath, repoName)
 	if util.Exists(dstFile) {
 		return errors.New("File already exists and overwriting is not allowed")
@@ -82,12 +82,17 @@ func CreateRepo(repoName string, database []string) error {
 	m[options.RepoReplaceAnchor[5]] = fmt.Sprintf("%v \n%s", m[options.RepoReplaceAnchor[5]], options.RepoReplaceAnchor[5])
 	m[options.RepoReplaceAnchor[6]] = fmt.Sprintf("%v \n%s", m[options.RepoReplaceAnchor[6]], options.RepoReplaceAnchor[6])
 
-	if err := ReplaceFileKeyword([]string{dstFile, providerFile}, m); err != nil {
+	// replace /cmd/provider.go
+	appProviderFile := conf.ProjectPath + "/cmd/provider.go"
+	m[options.AppReplaceAnchor[1]] = options.AppReplaceAnchorValue[1]([]string{"repo", conf.ProjectModule, appProviderFile})
+	m[options.AppReplaceAnchor[2]] = options.AppReplaceAnchorValue[2]([]string{"repo", appProviderFile})
+
+	if err := ReplaceFileKeyword([]string{dstFile, providerFile, appProviderFile}, m); err != nil {
 		return err
 	}
 
-	// if err := ExecCommand(conf.ProjectPath, "go", "mod", "tidy"); err != nil {
-	// 	return err
-	// }
+	if err := ExecCommand(conf.ProjectPath, "go", "mod", "tidy"); err != nil {
+		return err
+	}
 	return nil
 }

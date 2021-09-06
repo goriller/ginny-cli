@@ -22,7 +22,7 @@ func CreateHandle(handleName string) error {
 		return err
 	}
 
-	srcFile := fmt.Sprintf("%s/handlers/test.go", tmpPath)
+	srcFile := fmt.Sprintf("%s/handlers/tpl.go", tmpPath)
 	dstFile := fmt.Sprintf("%s/internal/handlers/%s.go", conf.ProjectPath, handleName)
 	if util.Exists(dstFile) {
 		return errors.New("File already exists and overwriting is not allowed")
@@ -49,7 +49,12 @@ func CreateHandle(handleName string) error {
 	m[options.HandleReplaceAnchor[1]] = options.HandleReplaceAnchorValue[1]([]string{handleName, caseName})
 	m[options.HandleReplaceAnchor[2]] = options.HandleReplaceAnchorValue[2]([]string{caseName})
 
-	if err := ReplaceFileKeyword([]string{dstFile, providerFile}, m); err != nil {
+	// replace /cmd/provider.go
+	appProviderFile := conf.ProjectPath + "/cmd/provider.go"
+	m[options.AppReplaceAnchor[1]] = options.AppReplaceAnchorValue[1]([]string{"handler", conf.ProjectModule, appProviderFile})
+	m[options.AppReplaceAnchor[2]] = options.AppReplaceAnchorValue[2]([]string{"handler", appProviderFile})
+
+	if err := ReplaceFileKeyword([]string{dstFile, providerFile, appProviderFile}, m); err != nil {
 		return err
 	}
 

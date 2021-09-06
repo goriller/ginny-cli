@@ -110,7 +110,9 @@ func GetProjectInfo() (*options.ProjectInfo, error) {
 	if conf.ProjectName == "" {
 		return nil, errors.New("The project flags file is corrupted .")
 	}
-	conf.ProjectPath = dir
+	if conf.ProjectPath == "" {
+		conf.ProjectPath = dir
+	}
 
 	return conf, nil
 }
