@@ -94,5 +94,6 @@ func CreateRepo(repoName string, database []string) error {
 	if err := ExecCommand(conf.ProjectPath, "go", "mod", "tidy"); err != nil {
 		return err
 	}
+	_ = GoFmtDir(conf.ProjectPath)
 	return nil
 }

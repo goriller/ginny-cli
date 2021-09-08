@@ -62,5 +62,7 @@ func CreateHandle(handleName string) error {
 		return err
 	}
 
+	_ = GoFmtDir(conf.ProjectPath)
+
 	return nil
 }

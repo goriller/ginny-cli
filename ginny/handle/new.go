@@ -15,12 +15,12 @@ func CreateProject(projectName, moduleName string, args ...string) error {
 		util.Error("Failed to get project directory, ", err.Error())
 		return err
 	}
-	projectDir := d + "/" + projectName
-	if err := PullTemplate(projectDir, options.TemplateRepo); err != nil {
+	ProjectPath := d + "/" + projectName
+	if err := PullTemplate(ProjectPath, options.TemplateRepo); err != nil {
 		return err
 	}
 	// 删除多余文件
-	if err := util.RemoveFile(projectDir + "/.git"); err != nil {
+	if err := util.RemoveFile(ProjectPath + "/.git"); err != nil {
 		return err
 	}
 
@@ -40,7 +40,7 @@ func CreateProject(projectName, moduleName string, args ...string) error {
 		MODULE_NAME: moduleName,
 	}
 	// 替换关键字
-	if err := ReplaceFileKeyword(util.GetFiles(projectDir), structs.Map(r)); err != nil {
+	if err := ReplaceFileKeyword(util.GetFiles(ProjectPath), structs.Map(r)); err != nil {
 		return err
 	}
 
@@ -49,14 +49,16 @@ func CreateProject(projectName, moduleName string, args ...string) error {
 		ProjectName:   projectName,
 		ProjectModule: moduleName,
 	}
-	if err := GenerateProjectInfo(projectDir, p); err != nil {
+	if err := GenerateProjectInfo(ProjectPath, p); err != nil {
 		return err
 	}
 
 	//
-	if err := ExecCommand(projectDir, "go", "mod", "tidy"); err != nil {
+	if err := ExecCommand(ProjectPath, "go", "mod", "tidy"); err != nil {
 		return err
 	}
+
+	_ = GoFmtDir(ProjectPath)
 
 	return nil
 }

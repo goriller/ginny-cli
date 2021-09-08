@@ -10,6 +10,7 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
+	"strings"
 )
 
 // Exists 判断所给路径文件/文件夹是否存在
@@ -194,6 +195,9 @@ func GetFiles(path string) []string {
 			return err
 		}
 		if f.IsDir() {
+			if strings.HasPrefix(f.Name(), ".") {
+				return filepath.SkipDir
+			}
 			return nil
 		}
 		files = append(files, path)

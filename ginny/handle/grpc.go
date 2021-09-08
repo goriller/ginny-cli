@@ -3,6 +3,7 @@ package handle
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/fatih/structs"
 	"github.com/gorillazer/ginny-cli/ginny/options"
@@ -10,7 +11,7 @@ import (
 	"github.com/iancoleman/strcase"
 )
 
-func CreateGrpc(serverName, types string) error {
+func CreateGrpc(serverName string, args ...string) error {
 	conf, err := GetProjectInfo()
 	if err != nil {
 		util.Error("Failed to get project info, ", err.Error())
@@ -22,11 +23,13 @@ func CreateGrpc(serverName, types string) error {
 		return err
 	}
 
-	if types == "server" {
+	argStr := strings.Join(args, ",")
+	if strings.Contains(argStr, "server") {
 		if err := createServer(serverName, tmpPath, conf); err != nil {
 			return err
 		}
-	} else {
+	}
+	if strings.Contains(argStr, "client") {
 		if err := createClient(serverName, tmpPath, conf); err != nil {
 			return err
 		}
@@ -35,6 +38,8 @@ func CreateGrpc(serverName, types string) error {
 	if err := ExecCommand(conf.ProjectPath, "go", "mod", "tidy"); err != nil {
 		return err
 	}
+
+	_ = GoFmtDir(conf.ProjectPath)
 
 	return nil
 }

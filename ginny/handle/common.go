@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/gorillazer/ginny-cli/ginny/options"
@@ -146,5 +147,18 @@ func ExecCommand(dir, name string, arg ...string) error {
 		return err
 	}
 	util.Info("ExecCommand", "End")
+	return nil
+}
+
+// GoFmtDir
+func GoFmtDir(dir string) error {
+	fs := util.GetFiles(dir)
+	for _, v := range fs {
+		if strings.HasSuffix(v, ".go") {
+			if err := ExecCommand(dir, "gofmt", "-w", v); err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }

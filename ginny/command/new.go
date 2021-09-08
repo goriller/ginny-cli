@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	newCmd.Flags().StringP("module", "m", "", "Define the project module, ex: git.tencent.com/demo")
+	newCmd.Flags().StringP("module", "m", "", "Define the project module, ex: github.com/demo")
 	newCmd.Flags().Bool("grpc", false, "Create a grpc service project")
 	newCmd.Flags().Bool("http", true, "Create a http service project")
 	rootCmd.AddCommand(newCmd)

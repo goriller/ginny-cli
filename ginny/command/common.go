@@ -3,6 +3,7 @@ package command
 import (
 	"fmt"
 
+	"github.com/gorillazer/ginny-cli/ginny/options"
 	"github.com/gorillazer/ginny-cli/ginny/util"
 )
 
@@ -15,4 +16,9 @@ func CheckArgs(args []string) error {
 		return fmt.Errorf(msg)
 	}
 	return nil
+}
+
+// ShowLogo
+func ShowLogo() {
+	fmt.Printf("\x1b[35;1m%s\x1b[0m\n", options.Logo)
 }
