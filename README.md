@@ -35,37 +35,53 @@ cp -f ginny $GOPATH/bin/
 ```
 ## Dependencies
 
-protoc：
+* protoc：
+
+    Mac OS:
 
 ```sh
-// mac
+// 如果没有安装homebrew,也可以使用下面下载二进制包的方法
 brew install protoc
-
-// centos7
-yum install protobuf-compiler
 ```
 
-protoc-gen-go：
+   Windwos及其他系统：
+    进入[protobuf release](https://github.com/protocolbuffers/protobuf/releases) 页面，选择适合自己操作系统的压缩包文件下载
+    解压缩后将bin/protoc二进制文件移动到环境变量的任意path下，如$GOPATH/bin，这里不建议直接将其和系统的一下path放在一起。
+
+* protoc-gen-go：
 
 ```sh
 // mac
-brew install protoc-gen-go	
-
-// centos7
-yum install golang-googlecode-goprotobuf
+cd $GOPATH && go install github.com/golang/protobuf/protoc-gen-go@latest
 ```
 
-goimports：
+* go wire:
+```sh
+cd $GOPATH && go get github.com/google/wire/cmd/wire
+```
+
+* protoc-gen-validate:
+```sh
+cd $GOPATH && go install github.com/envoyproxy/protoc-gen-validate@latest
+```
+
+* goimports：
 
 ```sh
-go get golang.org/x/tools/cmd/goimports
+cd $GOPATH && go get golang.org/x/tools/cmd/goimports
 ```
 
-mockgen：
+* mockgen：
+
+参考 https://github.com/golang/mock 进行安装
 
 ```sh
-# 参考 https://github.com/golang/mock 进行安装
+cd $GOPATH && go install github.com/golang/mock/mockgen@v1.6.0
 ```
+
+* make 
+Mac OS以及Linux系统一般都具备make命令，解决windows执行make命令的问题:
+[How to run "make" command in gitbash in windows?](https://gist.github.com/evanwill/0207876c3243bbb6863e65ec5dc3f058)
 
 ## Usage
 ```sh

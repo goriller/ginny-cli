@@ -62,6 +62,10 @@ func CreateHandle(handleName string) error {
 		return err
 	}
 
+	if err := ExecCommand(conf.ProjectPath, "wire", "./cmd/."); err != nil {
+		return err
+	}
+
 	_ = GoFmtDir(conf.ProjectPath)
 
 	return nil

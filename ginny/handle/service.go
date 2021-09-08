@@ -60,6 +60,9 @@ func CreateService(serviceName string) error {
 	if err := ExecCommand(conf.ProjectPath, "go", "mod", "tidy"); err != nil {
 		return err
 	}
+	if err := ExecCommand(conf.ProjectPath, "wire", "./cmd/."); err != nil {
+		return err
+	}
 	_ = GoFmtDir(conf.ProjectPath)
 	return nil
 }
