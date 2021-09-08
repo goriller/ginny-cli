@@ -120,6 +120,34 @@ $ ginny new hellodemo --grpc
 $ ginny new hellodemo -m github.com/xxx/hellodemo
 ```
 
+### 创建handler
+
+http服务项目，可以通过命令行工具创建handler：
+
+```sh
+$ ginny handle user 
+
+```
+创建的handler文件在项目 internal/handlers目录
+
+
+### 创建业务层service
+
+```sh
+$ ginny service user 
+
+```
+创建的service文件在项目 internal/services目录
+
+### 创建数据层repository
+
+```sh
+// support mysql、mongo、redis 
+$ ginny repo user -d mysql
+
+```
+创建的repository文件在项目 internal/repository目录
+
 ### 定义proto协议
 
 ```sh
@@ -143,3 +171,6 @@ hello.proto文件自动保存在项目api/proto目录。
 ```sh
 make proto
 ```
+
+创建grpc服务项目，会自动创建proto文件，无需单独创建
+
