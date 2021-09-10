@@ -39,14 +39,14 @@ func CreateService(serviceName string) error {
 		}
 	}
 	// replace service
-	caseName := strcase.ToCamel(serviceName)
+	camelName := strcase.ToCamel(serviceName)
 	r := &options.ReplaceKeywords{
 		APP_NAME:     conf.ProjectName,
 		MODULE_NAME:  conf.ProjectModule,
-		SERVICE_NAME: caseName,
+		SERVICE_NAME: camelName,
 	}
 	m := structs.Map(r)
-	m[options.ServiceReplaceAnchor[1]] = options.ServiceReplaceAnchorValue[1]([]string{caseName})
+	m[options.ServiceReplaceAnchor[1]] = options.ServiceReplaceAnchorValue[1]([]string{camelName})
 
 	// replace /cmd/provider.go
 	appProviderFile := conf.ProjectPath + "/cmd/provider.go"

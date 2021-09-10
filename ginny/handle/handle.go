@@ -31,11 +31,11 @@ func CreateHandle(handleName string) error {
 		return err
 	}
 	// replace handle
-	caseName := strcase.ToCamel(handleName)
+	camelName := strcase.ToCamel(handleName)
 	r := &options.ReplaceKeywords{
 		APP_NAME:    conf.ProjectName,
 		MODULE_NAME: conf.ProjectModule,
-		HANDLE_NAME: caseName,
+		HANDLE_NAME: camelName,
 	}
 
 	// replace provider
@@ -46,8 +46,8 @@ func CreateHandle(handleName string) error {
 		}
 	}
 	m := structs.Map(r)
-	m[options.HandleReplaceAnchor[1]] = options.HandleReplaceAnchorValue[1]([]string{handleName, caseName})
-	m[options.HandleReplaceAnchor[2]] = options.HandleReplaceAnchorValue[2]([]string{caseName})
+	m[options.HandleReplaceAnchor[1]] = options.HandleReplaceAnchorValue[1]([]string{handleName, camelName})
+	m[options.HandleReplaceAnchor[2]] = options.HandleReplaceAnchorValue[2]([]string{camelName})
 
 	// replace /cmd/provider.go
 	appProviderFile := conf.ProjectPath + "/cmd/provider.go"

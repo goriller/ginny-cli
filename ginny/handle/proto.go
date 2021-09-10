@@ -34,11 +34,11 @@ func CreateProto(serviceName string, validate bool) error {
 		return err
 	}
 	//
-	caseName := strcase.ToCamel(serviceName)
+	camelName := strcase.ToCamel(serviceName)
 	r := &options.ReplaceKeywords{
 		APP_NAME:     conf.ProjectName,
 		MODULE_NAME:  conf.ProjectModule,
-		SERVICE_NAME: caseName,
+		SERVICE_NAME: camelName,
 	}
 	if err := ReplaceFileKeyword([]string{dstFile}, structs.Map(r)); err != nil {
 		return err

@@ -31,11 +31,11 @@ func CreateRepo(repoName string, database []string) error {
 		return err
 	}
 	// replace
-	caseName := strcase.ToCamel(repoName)
+	camelName := strcase.ToCamel(repoName)
 	r := &options.ReplaceKeywords{
 		APP_NAME:    conf.ProjectName,
 		MODULE_NAME: conf.ProjectModule,
-		REPO_NAME:   caseName,
+		REPO_NAME:   camelName,
 	}
 
 	// replace provider
@@ -49,7 +49,7 @@ func CreateRepo(repoName string, database []string) error {
 
 	m[options.RepoReplaceAnchor[1]] = ""
 	m[options.RepoReplaceAnchor[2]] = ""
-	m[options.RepoReplaceAnchor[3]] = options.RepoReplaceAnchorValue[3]([]string{caseName})
+	m[options.RepoReplaceAnchor[3]] = options.RepoReplaceAnchorValue[3]([]string{camelName})
 	m[options.RepoReplaceAnchor[4]] = ""
 	m[options.RepoReplaceAnchor[5]] = ""
 	m[options.RepoReplaceAnchor[6]] = ""

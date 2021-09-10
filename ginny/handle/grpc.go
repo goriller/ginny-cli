@@ -80,17 +80,17 @@ func createServer(serverName, tmpPath string, conf *options.ProjectInfo) error {
 	}
 
 	// replace service
-	caseName := strcase.ToCamel(serverName)
+	camelName := strcase.ToCamel(serverName)
 	r := &options.ReplaceKeywords{
 		APP_NAME:    conf.ProjectName,
 		MODULE_NAME: conf.ProjectModule,
-		SERVER_NAME: caseName,
+		SERVER_NAME: camelName,
 	}
 	m := structs.Map(r)
 	m[options.ServerReplaceAnchor[1]] = options.ServerReplaceAnchorValue[1]([]string{conf.ProjectModule})
-	m[options.ServerReplaceAnchor[2]] = options.ServerReplaceAnchorValue[2]([]string{serverName, caseName})
-	m[options.ServerReplaceAnchor[3]] = options.ServerReplaceAnchorValue[3]([]string{caseName, serverName})
-	m[options.ServerReplaceAnchor[4]] = options.ServerReplaceAnchorValue[4]([]string{caseName})
+	m[options.ServerReplaceAnchor[2]] = options.ServerReplaceAnchorValue[2]([]string{serverName, camelName})
+	m[options.ServerReplaceAnchor[3]] = options.ServerReplaceAnchorValue[3]([]string{camelName, serverName})
+	m[options.ServerReplaceAnchor[4]] = options.ServerReplaceAnchorValue[4]([]string{camelName})
 
 	// replace /cmd/provider.go
 	appProviderFile := conf.ProjectPath + "/cmd/provider.go"
@@ -130,14 +130,14 @@ func createClient(clientName, tmpPath string, conf *options.ProjectInfo) error {
 		}
 	}
 	// replace service
-	caseName := strcase.ToCamel(clientName)
+	camelName := strcase.ToCamel(clientName)
 	r := &options.ReplaceKeywords{
 		APP_NAME:    conf.ProjectName,
 		MODULE_NAME: conf.ProjectModule,
-		SERVER_NAME: caseName,
+		SERVER_NAME: camelName,
 	}
 	m := structs.Map(r)
-	m[options.ClientReplaceAnchor[1]] = options.ClientReplaceAnchorValue[1]([]string{caseName})
+	m[options.ClientReplaceAnchor[1]] = options.ClientReplaceAnchorValue[1]([]string{camelName})
 
 	// replace /cmd/provider.go
 	appProviderFile := conf.ProjectPath + "/cmd/provider.go"
