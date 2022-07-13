@@ -1,8 +1,8 @@
 package command
 
 import (
-	"github.com/gorillazer/ginny-cli/ginny/handle"
-	"github.com/gorillazer/ginny-cli/ginny/util"
+	"github.com/goriller/ginny-cli/ginny/handler"
+	"github.com/goriller/ginny-cli/ginny/util"
 	"github.com/spf13/cobra"
 )
 
@@ -13,7 +13,7 @@ func init() {
 var serviceCmd = &cobra.Command{
 	Use:   "service",
 	Short: "Create service file",
-	Long:  "Create service file from template",
+	Long:  "Create service file from proto file",
 	PreRunE: func(cmd *cobra.Command, args []string) (err error) {
 		return nil
 	},
@@ -21,10 +21,8 @@ var serviceCmd = &cobra.Command{
 		if err := CheckArgs(args); err != nil {
 			return err
 		}
-		// 获取参数
-		serviceName := args[0]
 
-		if err := handle.CreateService(serviceName); err != nil {
+		if err := handler.CreateService(); err != nil {
 			return err
 		}
 

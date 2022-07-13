@@ -1,20 +1,22 @@
 package command
 
 import (
+	"fmt"
+
 	"github.com/goriller/ginny-cli/ginny/handler"
 	"github.com/goriller/ginny-cli/ginny/util"
 	"github.com/spf13/cobra"
 )
 
 func init() {
-	newCmd.Flags().StringP("module", "m", "", "Define the project module, ex: github.com/demo")
-	rootCmd.AddCommand(newCmd)
+	repoCmd.Flags().StringP("type", "t", "repo", "Define the component type, exp: logic、repo...")
+	rootCmd.AddCommand(repoCmd)
 }
 
-var newCmd = &cobra.Command{
-	Use:   "new",
-	Short: "Create a new Ginny project",
-	Long:  "Create a new Ginny project from template",
+var repoCmd = &cobra.Command{
+	Use:   "component",
+	Short: "Create component file",
+	Long:  "Create component file from template",
 	PreRunE: func(cmd *cobra.Command, args []string) (err error) {
 		return nil
 	},
@@ -23,19 +25,17 @@ var newCmd = &cobra.Command{
 			return err
 		}
 		// 获取参数
-		projectName := args[0]
+		repoName := args[0]
 		flags := cmd.Flags()
-		module, err := flags.GetString("module")
+		t, err := flags.GetString("type")
 		if err != nil {
 			return err
 		}
-
-		arg := []string{}
-		if err := handler.CreateProject(projectName, module, arg...); err != nil {
+		if err := handler.CreateComponent(repoName, t); err != nil {
 			return err
 		}
 
-		util.Info("Create new project success!")
+		util.Info(fmt.Sprintf("Create new %s file success", t))
 		return nil
 	},
 }

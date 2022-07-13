@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/gorillazer/ginny-cli/ginny/command"
+	"github.com/goriller/ginny-cli/ginny/command"
 )
 
 func main() {

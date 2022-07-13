@@ -11,14 +11,14 @@ Ginny command line tool.
 方法一： 在GOPATH下执行
 
 ```sh
-cd $GOPATH && go get github.com/gorillazer/ginny-cli/ginny
+cd $GOPATH && go get github.com/goriller/ginny-cli/ginny
 
 ```
 
 方法二：编译安装
 
 ```sh
-git clone github.com/gorillazer/ginny-cli.git
+git clone github.com/goriller/ginny-cli.git
 
 # mac:
 cd ginny-cli/ginny && CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ginny
@@ -98,12 +98,9 @@ Usage:
 
 Available Commands:
   completion  generate the autocompletion script for the specified shell
-  grpc        Create grpc server/client file
-  handle      Create handle file
   help        Help about any command
   new         Create a new Ginny project
-  proto       Create proto file
-  repo        Create repository file
+  component   Create component file
   service     Create service file
 
 Flags:
@@ -113,7 +110,7 @@ Use "ginny [command] --help" for more information about a command.
 ```
 ### 创建项目
 
-根据 [ginny-template](https://github.com/gorillazer/ginny-template) 模板创建新项目
+根据 [ginny-template](https://github.com/goriller/ginny-template) 模板创建新项目
 
 ```sh
 Create a new Ginny project from template
@@ -124,14 +121,13 @@ Usage:
 Flags:
       --grpc            Create a grpc service project
   -h, --help            help for new
-      --http            Create a http service project (default true)
   -m, --module string   Define the project module, ex: github.com/demo
 ```
 
 可根据参数创建http 或者 grpc服务的项目，默认创建http 项目
 
 ```sh
-$ ginny new hellodemo --grpc
+$ ginny new hellodemo
 
 ```
 还可以定制项目 module地址:
@@ -140,57 +136,21 @@ $ ginny new hellodemo --grpc
 $ ginny new hellodemo -m github.com/xxx/hellodemo
 ```
 
-### 创建handler
-
-http服务项目，可以通过命令行工具创建handler：
+### proto服务层service
 
 ```sh
-$ ginny handle user 
+$ ginny service 
 
 ```
-创建的handler文件在项目 internal/handlers目录
+创建的service文件在项目 internal/service目录。proto协议增加接口后，可以重复执行此命令生成方法实现模板。
 
+### 创建其他扩展
 
-### 创建业务层service
+例如 repo、logic等:
 
 ```sh
-$ ginny service user 
+$ ginny component user -t repo
 
 ```
-创建的service文件在项目 internal/services目录
-
-### 创建数据层repository
-
-```sh
-// support mysql、mongo、redis 
-$ ginny repo user -d mysql
-
-```
-创建的repository文件在项目 internal/repository目录
-
-### 定义proto协议
-
-```sh
-Create proto file from template
-
-Usage:
-  ginny proto [flags]
-
-Flags:
-  -h, --help       help for proto
-  -v, --validate   Added support for parameter verification
-```
-根据输入名称，自动创建.proto文件
-
-```sh
-ginny proto hello
-```
-hello.proto文件自动保存在项目api/proto目录。
-
-根据proto文件生成.pb.go以及serve代码:
-```sh
-make proto
-```
-
-创建grpc服务项目，会自动创建proto文件，无需单独创建
+创建的user_repo文件在项目 internal/repo目录
 

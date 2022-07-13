@@ -1,4 +1,4 @@
-package handle
+package handler
 
 import (
 	"errors"
@@ -8,9 +8,10 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/emicklei/proto"
 	"github.com/go-git/go-git/v5"
-	"github.com/gorillazer/ginny-cli/ginny/options"
-	"github.com/gorillazer/ginny-cli/ginny/util"
+	"github.com/goriller/ginny-cli/ginny/options"
+	"github.com/goriller/ginny-cli/ginny/util"
 	"gopkg.in/yaml.v3"
 )
 
@@ -27,8 +28,7 @@ func GetCurrentDir() (string, error) {
 
 // PullTemplate 拉取模板
 func PullTemplate(dir, repo string) error {
-	if !util.Exists(dir) {
-		_ = util.MkDir(dir)
+	if !util.Exists(dir + "/.git") {
 		// Clone the given repository to the given directory
 		util.Info("git clone " + repo)
 		_, err := git.PlainClone(dir, false, &git.CloneOptions{
@@ -39,40 +39,37 @@ func PullTemplate(dir, repo string) error {
 			util.Error("Clone the given repository error:", err.Error())
 			return err
 		}
-	} else {
-		if !util.Exists(dir + "/.git") {
-			return errors.New("The directory is not empty and is not a valid git directory")
-		}
-
-		// We instantiate a new repository targeting the given path (the .git folder)
-		r, err := git.PlainOpen(dir)
-		if err != nil {
-			return err
-		}
-		// Get the working directory for the repository
-		w, err := r.Worktree()
-		if err != nil {
-			return err
-		}
-		util.Info("git pull origin master ")
-		err = w.Pull(&git.PullOptions{RemoteName: "origin", Force: true})
-		if err != nil {
-			util.Error(err.Error())
-			return nil
-		}
-		// Print the latest commit that was just pulled
-		ref, err := r.Head()
-		if err != nil {
-			util.Error(err.Error())
-			return nil
-		}
-		commit, err := r.CommitObject(ref.Hash())
-		if err != nil {
-			util.Error(err.Error())
-			return nil
-		}
-		util.Info("git pull success", commit)
+		return nil
 	}
+
+	// We instantiate a new repository targeting the given path (the .git folder)
+	r, err := git.PlainOpen(dir)
+	if err != nil {
+		return err
+	}
+	// Get the working directory for the repository
+	w, err := r.Worktree()
+	if err != nil {
+		return err
+	}
+	util.Info("git pull origin master ")
+	err = w.Pull(&git.PullOptions{RemoteName: "origin", Force: true})
+	if err != nil {
+		util.Error(err.Error())
+		return nil
+	}
+	// Print the latest commit that was just pulled
+	ref, err := r.Head()
+	if err != nil {
+		util.Error(err.Error())
+		return nil
+	}
+	commit, err := r.CommitObject(ref.Hash())
+	if err != nil {
+		util.Error(err.Error())
+		return nil
+	}
+	util.Info("git pull success", commit)
 
 	return nil
 }
@@ -161,4 +158,38 @@ func GoFmtDir(dir string) error {
 		}
 	}
 	return nil
+}
+
+// GetTempPath
+func GetTempPath(path string) string {
+	tmp := fmt.Sprintf("%s/%s", os.TempDir(), path)
+	if !util.Exists(tmp) {
+		_ = util.MkDir(tmp)
+	}
+	return tmp
+}
+
+// parseProtoFile 解析pb文件，拿到proto文件描述信息
+func parseProtoFile(fname string) (map[string][]*proto.RPC, error) {
+	reader, _ := os.Open(fname)
+	defer reader.Close()
+
+	parser := proto.NewParser(reader)
+	definition, err := parser.Parse()
+	if err != nil {
+		return nil, err
+	}
+
+	elem := map[string][]*proto.RPC{}
+	proto.Walk(definition,
+		proto.WithService(func(s *proto.Service) {
+			elem[s.Name] = []*proto.RPC{}
+			for _, each := range s.Elements {
+				if c, ok := each.(*proto.RPC); ok {
+					elem[s.Name] = append(elem[s.Name], c)
+				}
+			}
+		}),
+	)
+	return elem, nil
 }

@@ -1,11 +1,8 @@
-package handle
+package handler
 
 import (
-	"strings"
-
-	"github.com/fatih/structs"
-	"github.com/gorillazer/ginny-cli/ginny/options"
-	"github.com/gorillazer/ginny-cli/ginny/util"
+	"github.com/goriller/ginny-cli/ginny/options"
+	"github.com/goriller/ginny-cli/ginny/util"
 )
 
 // CreateProject 创建项目
@@ -28,19 +25,11 @@ func CreateProject(projectName, moduleName string, args ...string) error {
 		moduleName = projectName
 	}
 
-	argStr := strings.Join(args, ",")
-	if strings.Contains(argStr, "grpc") {
-		if err := CreateGrpc(projectName, "server"); err != nil {
-			return err
-		}
-	}
-
-	r := &options.ReplaceKeywords{
-		APP_NAME:    projectName,
-		MODULE_NAME: moduleName,
-	}
 	// 替换关键字
-	if err := ReplaceFileKeyword(util.GetFiles(ProjectPath), structs.Map(r)); err != nil {
+	if err := ReplaceFileKeyword(util.GetFiles(ProjectPath), map[string]interface{}{
+		"APP_NAME":    projectName,
+		"MODULE_NAME": moduleName,
+	}); err != nil {
 		return err
 	}
 

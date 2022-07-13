@@ -3,8 +3,8 @@ package command
 import (
 	"fmt"
 
-	"github.com/gorillazer/ginny-cli/ginny/options"
-	"github.com/gorillazer/ginny-cli/ginny/util"
+	"github.com/goriller/ginny-cli/ginny/options"
+	"github.com/goriller/ginny-cli/ginny/util"
 )
 
 // CheckArgs should be used to ensure the right command line arguments are
