@@ -8,10 +8,10 @@ Ginny command line tool.
 
 *注意： 该命令行工具支持MacOs、Linux系统，windows系统请使用gitBash或者Cygwin*
 
-方法一： 在GOPATH下执行
+方法一： 
 
 ```sh
-cd $GOPATH && go get github.com/goriller/ginny-cli/ginny
+go install github.com/goriller/ginny-cli/ginny@latest
 
 ```
 
