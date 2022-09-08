@@ -12,15 +12,15 @@ func init() {
 
 var serviceCmd = &cobra.Command{
 	Use:   "service",
-	Short: "Create service file",
-	Long:  "Create service file from proto file",
+	Short: "Create service file by proto file",
+	Long:  "Create service file by proto file",
 	PreRunE: func(cmd *cobra.Command, args []string) (err error) {
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) (err error) {
-		if err := CheckArgs(args); err != nil {
-			return err
-		}
+		// if err := CheckArgs(args); err != nil {
+		// 	return err
+		// }
 
 		if err := handler.CreateService(); err != nil {
 			return err

@@ -101,7 +101,7 @@ Available Commands:
   help        Help about any command
   new         Create a new Ginny project
   component   Create component file
-  service     Create service file
+  service     Create service file by proto file
 
 Flags:
   -h, --help   help for ginny
