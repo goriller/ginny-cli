@@ -2,7 +2,6 @@ package handler
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/fatih/structs"
 	"github.com/goriller/ginny-cli/ginny/options"
@@ -36,7 +35,7 @@ func CreateService() error {
 		for _, val := range v {
 			fmt.Printf("%s: %v,%v,%v\n", k, val.Name, val.RequestType, val.ReturnsType)
 			srcFile := fmt.Sprintf("%s/service/tpl.go", tmpPath)
-			dstFile := fmt.Sprintf("%s/internal/service/%s.go", conf.ProjectPath, strings.ToLower(val.Name))
+			dstFile := fmt.Sprintf("%s/internal/service/%s.go", conf.ProjectPath, strcase.ToSnake(val.Name))
 			if util.Exists(dstFile) {
 				continue
 			}
